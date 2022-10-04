@@ -2,6 +2,7 @@ package com.example.swapcomposebook
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -12,6 +13,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -24,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.swapcomposebook.ui.theme.SwapComposeBookTheme
 
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     Scaffold(topBar = { TopBar() }) {
-                        RadioButtons()
+                        RadioButtonsDemo()
                     }
                 }
             }
@@ -49,24 +50,37 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun RadioButtons() {
+fun RadioButtonsDemo() {
+    var radioOptions = listOf<String>("Male", "Female", "Others")
     var selected by remember {
-        mutableStateOf("Male")
+        mutableStateOf("")
     }
+    RadioButtons(radioOptions, selected, onRadioButtonChange = {
+        selected = it
+    })
+}
+
+@Composable
+fun RadioButtons(
+    radioOptions: List<String>,
+    selected: String,
+    onRadioButtonChange: (String) -> Unit
+) {
     Row(
         modifier = Modifier.wrapContentSize(Alignment.TopCenter),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        RadioButton(selected = selected == "Male", onClick = { selected = "Male" })
-        Text(text = "Male", modifier = Modifier
-            .clickable {
-                selected = "Male"
-            })
-        RadioButton(selected = selected == "Female", onClick = { selected = "Female" })
-        Text(text = "Female", modifier = Modifier
-            .clickable {
-                selected = "Female"
-            })
+        radioOptions.forEach { text ->
+            RadioButton(
+                selected = selected == text,
+                onClick = { onRadioButtonChange(text) },
+                colors = RadioButtonDefaults.colors(selectedColor = MaterialTheme.colors.primaryVariant)
+            )
+            Text(text = text, modifier = Modifier
+                .clickable {
+                    onRadioButtonChange(text)
+                })
+        }
     }
 }
 
@@ -86,6 +100,6 @@ fun TopBar() {
 @Composable
 fun DefaultPreview() {
     SwapComposeBookTheme {
-        RadioButtons()
+        RadioButtonsDemo()
     }
 }
